@@ -84,7 +84,6 @@ class SQLRequestMixin(models.AbstractModel):
         default=_default_user_ids)
 
     # Action Section
-    @api.multi
     def button_validate_sql_expression(self):
         for item in self:
             if item._clean_query_enabled:
@@ -95,12 +94,10 @@ class SQLRequestMixin(models.AbstractModel):
                 item._check_execution()
             item.state = 'sql_valid'
 
-    @api.multi
     def button_set_draft(self):
         self.write({'state': 'draft'})
 
     # API Section
-    @api.multi
     def _execute_sql_request(
             self, params=None, mode='fetchall', rollback=True,
             view_name=False, copy_options="CSV HEADER DELIMITER ';'"):
@@ -211,7 +208,6 @@ class SQLRequestMixin(models.AbstractModel):
                 "Materialized View requires PostgreSQL 9.3 or greater but"
                 " PostgreSQL %s is currently installed.") % (minor_version))
 
-    @api.multi
     def _clean_query(self):
         self.ensure_one()
         query = self.query.strip()
@@ -219,7 +215,6 @@ class SQLRequestMixin(models.AbstractModel):
             query = query[:-1]
         self.query = query
 
-    @api.multi
     def _check_prohibited_words(self):
         """Check if the query contains prohibited words, to avoid maliscious
         SQL requests"""
@@ -233,7 +228,6 @@ class SQLRequestMixin(models.AbstractModel):
                     "The query is not allowed because it contains unsafe word"
                     " '%s'") % (word))
 
-    @api.multi
     def _check_execution(self):
         """Ensure that the query is valid, trying to execute it. A rollback
         is done after."""
@@ -252,7 +246,6 @@ class SQLRequestMixin(models.AbstractModel):
             self._rollback_savepoint(rollback_name)
         return res
 
-    @api.multi
     def _prepare_request_check_execution(self):
         """Overload me to replace some part of the query, if it contains
         parameters"""
